@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anatomía de un Problema de Investigación - PhD. Jaime Zambrana</title>
+    <title>Simulador: Ishikawa y Árbol de Problemas - Metodología de la Investigación</title>
     <style>
         :root {
             --primary: #0f2d59;
@@ -14,36 +14,35 @@
             --surface: #ffffff;
             --text: #1e293b;
             --border: #cbd5e1;
-            
-            /* Colores de la diapositiva pedagógica */
-            --color-vi: #16a34a;       /* Verde: Variable Independiente */
-            --color-vd: #dc2626;       /* Rojo: Variable Dependiente */
-            --color-ambito: #d97706;   /* Amarillo/Ocre: Ámbitos y conectores */
-            --color-step: #f59e0b;
+            --ishikawa-bone: #0284c7;
+            --ishikawa-head: #0369a1;
+            --arbol-efectos: #dc2626;
+            --arbol-problema: #7c3aed;
+            --arbol-causas: #16a34a;
         }
 
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
         body { background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 1350px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }
 
         header { 
             background: linear-gradient(135deg, #1e293b, var(--primary)); 
             color: white; 
             padding: 22px 28px; 
             border-radius: 12px; 
-            margin-bottom: 22px; 
+            margin-bottom: 20px; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
         }
         header h1 { margin: 0 0 6px 0; font-size: 22px; }
         header p { margin: 0; opacity: 0.85; font-size: 13.5px; }
 
-        /* Selector de Ámbitos por Radio Buttons */
+        /* Selector de Casos por Radio Buttons */
         .preset-bar {
             background: var(--surface);
             border: 2px solid var(--primary-light);
             border-radius: 10px;
             padding: 14px 20px;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -55,9 +54,6 @@
             font-weight: 700;
             color: var(--primary);
             font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
         .radio-group {
             display: flex;
@@ -70,525 +66,474 @@
             gap: 6px;
             cursor: pointer;
             background: #f8fafc;
-            padding: 8px 14px;
+            padding: 8px 16px;
             border-radius: 20px;
             border: 1px solid var(--border);
             transition: all 0.2s ease;
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 600;
         }
-        .radio-option:hover {
-            background: #e2e8f0;
-        }
-        .radio-option input[type="radio"] {
-            margin: 0;
-            accent-color: var(--primary-light);
-            cursor: pointer;
-        }
+        .radio-option:hover { background: #e2e8f0; }
+        .radio-option input[type="radio"] { margin: 0; accent-color: var(--primary-light); cursor: pointer; }
         .radio-option.active {
             background: #dbeafe;
             border-color: var(--primary-light);
             color: var(--primary-light);
         }
 
-        /* Pizarra Interactiva con colores de la diapositiva */
-        .slide-board {
-            background-color: #2b2d30;
-            color: #ffffff;
-            border-radius: 10px;
-            padding: 24px;
-            margin-bottom: 22px;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
-            border-left: 6px solid var(--color-step);
+        /* Pestañas de Visualización del Simulador */
+        .tabs-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
         }
-        .slide-board h3 {
-            margin: 0 0 12px 0;
-            font-size: 14px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--color-step);
-        }
-        .anatomia-preview {
-            font-size: 19px;
-            line-height: 1.6;
-            font-weight: 500;
-        }
-        .t-vi { color: #4ade80; font-weight: 700; }
-        .t-vd { color: #f87171; font-weight: 700; }
-        .t-amb { color: #fbbf24; font-weight: 700; }
-        .t-num { color: #94a3b8; font-size: 13px; font-weight: normal; vertical-align: super; }
-
-        /* Rejilla de Formularios */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
-        @media (max-width: 950px) { .grid { grid-template-columns: 1fr; } }
-
-        .card { 
-            background: var(--surface); 
-            border: 1px solid var(--border); 
-            border-radius: 10px; 
-            padding: 20px; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05); 
-            margin-bottom: 20px; 
-        }
-        .card h2 { 
-            font-size: 15px; 
-            margin-top: 0; 
-            padding-bottom: 10px; 
-            border-bottom: 2px solid #e2e8f0; 
-            color: var(--primary); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; color: #334155; }
-        label span.badge-num {
+        .tab-btn {
             background: #e2e8f0;
-            color: #0f172a;
-            padding: 1px 6px;
-            border-radius: 10px;
-            font-size: 11px;
-            margin-right: 4px;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13.5px;
+            color: #475569;
+            transition: all 0.2s;
         }
-        input, select { 
-            width: 100%; 
-            padding: 8px 10px; 
-            border: 1px solid var(--border); 
-            border-radius: 6px; 
-            font-size: 13px; 
-            background-color: #ffffff;
-        }
-        input:focus, select:focus { 
-            outline: none; 
-            border-color: var(--primary-light); 
-            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15); 
+        .tab-btn.active {
+            background: var(--surface);
+            color: var(--primary);
+            border-top: 3px solid var(--primary);
         }
 
-        .result-box { 
-            background: var(--accent); 
-            border-left: 4px solid var(--primary-light); 
-            padding: 12px 14px; 
-            margin-bottom: 12px; 
-            border-radius: 0 6px 6px 0; 
+        .view-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0 10px 10px 10px;
+            padding: 22px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            margin-bottom: 22px;
         }
-        .tag { font-weight: 700; color: var(--primary); display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .result-text { font-size: 13.5px; color: #0f172a; }
 
-        .verb-info-box { 
-            background: #f8fafc; 
-            border-left: 4px solid var(--secondary); 
-            padding: 12px; 
-            border-radius: 0 6px 6px 0; 
-            margin-top: 10px; 
-            font-size: 12px; 
-        }
-        .badge-hipotesis {
-            display: inline-block;
-            padding: 2px 7px;
-            border-radius: 10px;
-            font-size: 10.5px;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-        .badge-exploratorio { background: #e0f2fe; color: #0369a1; }
-        .badge-req { background: #fee2e2; color: #991b1b; }
-        .badge-posible { background: #dcfce7; color: #166534; }
-
-        .variable-detector { 
-            background: #f0fdf4; 
-            border: 1px solid #bbf7d0; 
-            padding: 12px; 
-            border-radius: 8px; 
-            font-size: 12.5px; 
-        }
-        .variable-detector ul { margin: 6px 0 0 0; padding-left: 18px; }
-        .variable-detector li { margin-bottom: 4px; }
-
-        .btn-action { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 10px 18px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 13px; 
-            font-weight: 600; 
+        /* Lienzos Gráficos */
+        .diagram-canvas {
             width: 100%;
-            transition: background 0.2s;
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px dashed var(--border);
+            overflow-x: auto;
+            padding: 15px 0;
         }
-        .btn-action:hover { background: var(--primary-light); }
+
+        /* Contenedor del Árbol de Problemas */
+        .tree-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .tree-section {
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid var(--border);
+        }
+        .tree-section h4 {
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sec-efectos { background: #fef2f2; border-color: #fecaca; }
+        .sec-efectos h4 { color: #991b1b; }
+        .sec-problema { background: #faf5ff; border-color: #e9d5ff; border-width: 2px; }
+        .sec-problema h4 { color: #6b21a8; font-size: 14px; }
+        .sec-causas { background: #f0fdf4; border-color: #bbf7d0; }
+        .sec-causas h4 { color: #166534; }
+
+        .tree-nodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        .tree-node {
+            background: #ffffff;
+            border-radius: 6px;
+            padding: 10px 14px;
+            font-size: 13px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            border-left: 4px solid #cbd5e1;
+        }
+        .node-efecto { border-left-color: var(--arbol-efectos); }
+        .node-problema { 
+            border-left-color: var(--arbol-problema); 
+            font-size: 15px; 
+            font-weight: 700; 
+            color: #4c1d95; 
+            background: #ffffff;
+            text-align: center;
+            padding: 14px;
+        }
+        .node-causa { border-left-color: var(--arbol-causas); }
+
+        /* Articulación con el Planteamiento */
+        .panel-redaccion {
+            background: #f8fafc;
+            border-left: 5px solid var(--primary-light);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-top: 15px;
+        }
+        .panel-redaccion h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: var(--primary);
+            text-transform: uppercase;
+        }
+        .redaccion-text {
+            font-size: 13.5px;
+            line-height: 1.7;
+            color: #334155;
+            text-align: justify;
+        }
+        .btn-copy {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .btn-copy:hover { background: var(--primary-light); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <h1>Anatomía de un Problema Principal de Investigación</h1>
-        <p>Herramienta Didáctica Integrada (PhD. Jaime Zambrana Chacón) — Coherencia de 8 Elementos, Verbos Taxonómicos, Hipótesis y Detección de Variables</p>
+        <h1>Simulador Diagnóstico: Diagrama Ishikawa & Árbol de Problemas</h1>
+        <p>Herramienta Didáctica para el Planteamiento del Problema en Tesis de Posgrado (PhD. Jaime Zambrana Chacón)</p>
     </header>
 
-    <!-- Selector de Ámbitos por Radio Buttons -->
+    <!-- Selector de Ámbitos -->
     <div class="preset-bar">
         <div class="preset-title">
-            <span>📌 Seleccionar Caso de Ejemplo:</span>
+            <span>🔬 Seleccionar Caso de Estudio:</span>
         </div>
         <div class="radio-group">
             <label class="radio-option active" id="lbl-ecografia">
-                <input type="radio" name="area_ejemplo" value="ecografia" checked onchange="cargarCaso('ecografia')">
-                1. Ecografía
+                <input type="radio" name="caso_estudio" value="ecografia" checked onchange="cambiarCaso('ecografia')">
+                1. Ecografía (Quistes Mamarios)
             </label>
             <label class="radio-option" id="lbl-salud">
-                <input type="radio" name="area_ejemplo" value="salud" onchange="cargarCaso('salud')">
-                2. Salud Pública
+                <input type="radio" name="caso_estudio" value="salud" onchange="cambiarCaso('salud')">
+                2. Salud Pública (Microlitiasis Renal)
             </label>
             <label class="radio-option" id="lbl-farmacologia">
-                <input type="radio" name="area_ejemplo" value="farmacologia" onchange="cargarCaso('farmacologia')">
-                3. Farmacología
-            </label>
-            <label class="radio-option" id="lbl-educacion">
-                <input type="radio" name="area_ejemplo" value="educacion" onchange="cargarCaso('educacion')">
-                4. Educación
+                <input type="radio" name="caso_estudio" value="farmacologia" onchange="cambiarCaso('farmacologia')">
+                3. Farmacología (Tolerancia a Opioides)
             </label>
         </div>
     </div>
 
-    <!-- Pizarra de Anatomía en Tiempo Real -->
-    <div class="slide-board">
-        <h3>Estructura Sintáctica del Problema Principal:</h3>
-        <div class="anatomia-preview" id="pizarra_anatomia"></div>
+    <!-- Pestañas de Vista -->
+    <div class="tabs-header">
+        <button class="tab-btn active" id="btn-tab-ishikawa" onclick="seleccionarVista('ishikawa')">
+            🐟 Diagrama de Ishikawa (Espina de Pescado)
+        </button>
+        <button class="tab-btn" id="btn-tab-arbol" onclick="seleccionarVista('arbol')">
+            🌳 Árbol de Problemas (Causas - Problema - Efectos)
+        </button>
     </div>
 
-    <div class="grid">
-        <!-- Columna Izquierda: Los 8 Elementos -->
-        <div>
-            <div class="card">
-                <h2>1. Los 8 Elementos de la Anatomía</h2>
-                
-                <div class="form-group">
-                    <label><span class="badge-num">1</span> Pregunta Clave:</label>
-                    <input type="text" id="c1_pregunta" oninput="sincronizar()">
-                </div>
+    <!-- VISTA 1: DIAGRAMA DE ISHIKAWA -->
+    <div id="vista-ishikawa" class="view-content">
+        <div class="diagram-canvas">
+            <svg id="svg-ishikawa" viewBox="0 0 1150 520" width="100%" height="500">
+                <!-- Se genera dinámicamente -->
+            </svg>
+        </div>
+        <div class="panel-redaccion">
+            <h3>Traducción Metodológica: Del Ishikawa a las Causas del Problema</h3>
+            <p id="ishikawa-explicacion" class="redaccion-text"></p>
+        </div>
+    </div>
 
-                <div class="form-group">
-                    <label><span class="badge-num" style="background:#bbf7d0; color:#14532d;">2</span> Variable "y Independiente" (Causa / Intervención / Factor):</label>
-                    <input type="text" id="c2_vi" oninput="sincronizar()">
-                </div>
-
-                <div class="form-group">
-                    <label><span class="badge-num">3</span> Enlace o Relacionante:</label>
-                    <input type="text" id="c3_enlace" oninput="sincronizar()">
-                </div>
-
-                <div class="form-group">
-                    <label><span class="badge-num" style="background:#fecaca; color:#7f1d1d;">4</span> Variable "x Dependiente" (Efecto / Hallazgo / Respuesta):</label>
-                    <input type="text" id="c4_vd" oninput="sincronizar()">
-                </div>
-
-                <div class="form-group">
-                    <label><span class="badge-num">5</span> Muestra / Población:</label>
-                    <input type="text" id="c5_poblacion" oninput="sincronizar()">
-                </div>
-
-                <div class="form-group">
-                    <label><span class="badge-num" style="background:#fef3c7; color:#78350f;">6</span> Ámbito Institucional / Asistencial (Accesible):</label>
-                    <input type="text" id="c6_institucion" oninput="sincronizar()">
-                </div>
-
-                <div class="form-group">
-                    <label><span class="badge-num">7</span> Ámbito Geográfico (Objetivo):</label>
-                    <input type="text" id="c7_geografia" oninput="sincronizar()">
-                </div>
-
-                <div class="form-group">
-                    <label><span class="badge-num" style="background:#fef3c7; color:#78350f;">8</span> Tiempo:</label>
-                    <input type="text" id="c8_tiempo" oninput="sincronizar()">
-                </div>
+    <!-- VISTA 2: ÁRBOL DE PROBLEMAS -->
+    <div id="vista-arbol" class="view-content" style="display: none;">
+        <div class="tree-container">
+            <!-- Nivel Superior: Efectos -->
+            <div class="tree-section sec-efectos">
+                <h4>🍃 Consecuencias y Efectos Clínicos (Ramas del Árbol)</h4>
+                <div class="tree-nodes-grid" id="arbol-efectos"></div>
             </div>
 
-            <div class="card">
-                <h2>2. Verbo Infinitivo para el Objetivo General</h2>
-                <div class="form-group">
-                    <label>Seleccionar Verbo Taxonómico:</label>
-                    <select id="verbo_select" onchange="actualizarVerboInfo(); sincronizar();">
-                        <optgroup label="Nivel Exploratorio (Básico)">
-                            <option value="Explorar">Explorar</option>
-                            <option value="Indagar">Indagar</option>
-                            <option value="Sondear">Sondear</option>
-                            <option value="Detectar">Detectar</option>
-                            <option value="Reconocer">Reconocer</option>
-                        </optgroup>
-                        <optgroup label="Nivel Descriptivo (Caracterización y medida)">
-                            <option value="Caracterizar">Caracterizar</option>
-                            <option value="Describir">Describir</option>
-                            <option value="Determinar" selected>Determinar</option>
-                            <option value="Identificar">Identificar</option>
-                            <option value="Cuantificar">Cuantificar</option>
-                            <option value="Clasificar">Clasificar</option>
-                            <option value="Estimar">Estimar</option>
-                        </optgroup>
-                        <optgroup label="Nivel Correlacional / Comparativo (Asociación)">
-                            <option value="Relacionar">Relacionar</option>
-                            <option value="Correlacionar">Correlacionar</option>
-                            <option value="Comparar">Comparar</option>
-                            <option value="Contrastar">Contrastar</option>
-                            <option value="Asociar">Asociar</option>
-                        </optgroup>
-                        <optgroup label="Nivel Explicativo / Causal (Causa-Efecto)">
-                            <option value="Demostrar">Demostrar</option>
-                            <option value="Comprobar">Comprobar</option>
-                            <option value="Explicar">Explicar</option>
-                            <option value="Verificar">Verificar</option>
-                            <option value="Evaluar">Evaluar</option>
-                        </optgroup>
-                        <optgroup label="Nivel Propositivo / Solución (Capítulo 3)">
-                            <option value="Proponer">Proponer</option>
-                            <option value="Diseñar">Diseñar</option>
-                            <option value="Estandarizar">Estandarizar</option>
-                        </optgroup>
-                    </select>
-                </div>
-                <div id="box_verb_detail" class="verb-info-box"></div>
+            <!-- Nivel Central: Problema Principal -->
+            <div class="tree-section sec-problema">
+                <h4>🪵 Problema Central / Variable Dependiente (Tronco del Árbol)</h4>
+                <div class="tree-node node-problema" id="arbol-problema-central"></div>
+            </div>
+
+            <!-- Nivel Inferior: Causas -->
+            <div class="tree-section sec-causas">
+                <h4>🌱 Causas Directas e Indirectas / Factores Etiológicos (Raíces del Árbol)</h4>
+                <div class="tree-nodes-grid" id="arbol-causas"></div>
             </div>
         </div>
 
-        <!-- Columna Derecha: Coherencia y Detección de Variables -->
-        <div>
-            <div class="card">
-                <h2>3. Coherencia Científica Resultante</h2>
-                
-                <div class="result-box">
-                    <span class="tag">Formulación del Problema Científico</span>
-                    <div id="out_problema" class="result-text"></div>
-                </div>
-
-                <div class="result-box">
-                    <span class="tag">Objetivo General</span>
-                    <div id="out_objetivo" class="result-text"></div>
-                </div>
-
-                <div class="result-box">
-                    <span class="tag">Hipótesis de Investigación</span>
-                    <div id="out_hipotesis" class="result-text"></div>
-                </div>
-
-                <div class="result-box">
-                    <span class="tag">Título Científico</span>
-                    <div id="out_titulo" class="result-text"></div>
-                </div>
-
-                <div class="variable-detector">
-                    <strong>Detector Metodológico de Variables y Objeto:</strong>
-                    <ul>
-                        <li><strong>Variable Independiente (Causa / Estímulo):</strong> <span id="dt_vi" class="t-vi" style="background:#e8f5e9; padding:2px 6px; border-radius:4px;"></span></li>
-                        <li><strong>Variable Dependiente (Efecto / Fenómeno observado):</strong> <span id="dt_vd" class="t-vd" style="background:#fee2e2; padding:2px 6px; border-radius:4px;"></span></li>
-                        <li><strong>Objeto de Estudio (Variable Dependiente):</strong> <span id="dt_obj"></span></li>
-                        <li><strong>Campo de Acción (Variable Independiente en contexto):</strong> <span id="dt_campo"></span></li>
-                    </ul>
-                </div>
-
-                <div style="margin-top: 15px;">
-                    <button class="btn-action" onclick="copiarAlPortapapeles()">Copiar Matriz de Coherencia al Portapapeles</button>
-                </div>
-            </div>
+        <div class="panel-redaccion">
+            <h3>Redacción para el Planteamiento del Problema en el Perfil de Tesis</h3>
+            <p id="arbol-redaccion" class="redaccion-text"></p>
+            <button class="btn-copy" onclick="copiarPlanteamiento()">Copiar Párrafo del Planteamiento al Portapapeles</button>
         </div>
     </div>
 </div>
 
 <script>
-    const casos = {
+    // Datos completos para los 3 casos
+    const baseCasos = {
         ecografia: {
-            p1: "¿Cuáles son",
-            p2: "los factores alimentarios",
-            p3: "que producen",
-            p4: "quistes de mama que se detectan mediante ecografía de mama",
-            p5: "en pacientes femeninos de 20 y 30 años",
-            p6: "en la Caja Nacional de Salud",
-            p7: "de Cochabamba",
-            p8: "entre los meses de julio a diciembre del año 2024",
-            verbo: "Determinar"
+            titulo: "Quistes de mama detectados mediante ecografía mamaria",
+            problemaCentral: "Elevada incidencia de lesiones quísticas mamarias detectadas por ecografía en mujeres jóvenes",
+            ishikawa: {
+                cabeza: "Quistes de Mama (Variable Dependiente)",
+                categorias: [
+                    { nombre: "Método / Hábitos", causas: ["Consumo alto de metilxantinas (café/té)", "Dieta rica en grasas saturadas"] },
+                    { nombre: "Paciente / Biológico", causas: ["Hiperestrogenismo relativo", "Estrés y cronodisrupción ovárica"] },
+                    { nombre: "Equipamiento", causas: ["Transductores lineales de alta frecuencia sin calibración periódica", "Ganancia acústica mal ajustada"] },
+                    { nombre: "Criterios / Medición", causas: ["Diferenciación dudosa entre quiste simple y complicado", "Ausencia de elastografía complementaria"] },
+                    { nombre: "Mano de Obra", causas: ["Heterogeneidad en la compresión mamaria", "Variabilidad interobservador en la clasificación BI-RADS"] },
+                    { nombre: "Medio / Contexto", causas: ["Acceso tardío a controles de rutina", "Baja cobertura de tamizaje gineco-obstétrico"] }
+                ]
+            },
+            arbol: {
+                efectos: [
+                    "Ansiedad marcada y somatización en la paciente por temor a neoplasia maligna.",
+                    "Sobrecosto asistencial por indicación excesiva de biopsias y punciones innecesarias.",
+                    "Retraso en la categorización diagnóstica certera según la normativa BI-RADS.",
+                    "Saturación de las agendas de consulta especializada en mastología."
+                ],
+                problema: "Formación recurrente y diagnóstico impreciso de quistes mamarios bilaterales en mujeres de 20 a 30 años en centros de salud.",
+                causas: [
+                    "Hábitos alimentarios con ingesta crónica de estimulantes tisulares (metilxantinas).",
+                    "Desbalances hormonales en la fase lútea no detectados oportunamente.",
+                    "Falta de estandarización en los protocolos de rastreo y reporte ecográfico.",
+                    "Uso irregular de transductores lineales de resolución milimétrica en centros periféricos."
+                ],
+                redaccion: "En el contexto de la ultrasonografía diagnóstica, la formación de quistes mamarios en pacientes jóvenes representa un motivo frecuente de interconsulta. A través del análisis causal, se evidencia que los factores alimentarios y las fluctuaciones estrogénicas actúan como variables independientes desencadenantes del parénquima glandular alterado. Cuando los protocolos de barrido ecográfico carecen de estandarización semiológica, se generan falsas alarmas, biopsias innecesarias y altos costos para el sistema sanitario, justificando la delimitación precisa de este fenómeno en el ámbito institucional."
+            }
         },
         salud: {
-            p1: "¿Cuál es",
-            p2: "el índice de masa corporal y sedentarismo",
-            p3: "asociado a",
-            p4: "enfermedades cardíacas y metabólicas",
-            p5: "en hombres de 30 a 50 años",
-            p6: "en el Hospital Universitario",
-            p7: "en Tarija",
-            p8: "en el segundo trimestre de 2023",
-            verbo: "Relacionar"
+            titulo: "Microlitiasis renal en pacientes adultos",
+            problemaCentral: "Prevalencia en aumento de microlitiasis renal diagnosticada en etapas asintomáticas por ultrasonido",
+            ishikawa: {
+                cabeza: "Microlitiasis Renal (Variable Dependiente)",
+                categorias: [
+                    { nombre: "Estilo de Vida", causas: ["Sedentarismo laboral prolongado", "Bajo consumo de agua potable diaria"] },
+                    { nombre: "Alimentación", causas: ["Consumo excesivo de sodio y embutidos", "Dieta con hiperconsumo de lácteos y oxalatos"] },
+                    { nombre: "Tecnología / Imagen", causas: ["Artefacto en cola de cometa no reconocido", "Ajuste deficiente del Doppler color para artefacto 'twinkling'"] },
+                    { nombre: "Factores Clínicos", causas: ["Hiperuricemia y síndrome metabólico", "Infecciones urinarias a repetición subclínicas"] },
+                    { nombre: "Operador", causas: ["Confusión de calcificación papilar con litiasis piélica", "Rastreo renal rápido en pacientes con meteorismo"] },
+                    { nombre: "Ambiente", causas: ["Clima cálido con deshidratación insensible", "Hábitos de retención urinaria en jornadas de trabajo"] }
+                ]
+            },
+            arbol: {
+                efectos: [
+                    "Evolución silenciosa hacia nefrolitiasis obstructiva y cólico nefrítico agudo.",
+                    "Riesgo de daño en el parénquima renal e insuficiencia renal crónica a largo plazo.",
+                    "Pérdida de jornadas laborales por incapacidad temporal recurrente.",
+                    "Gasto elevado en intervenciones de litotricia y hospitalización de urgencia."
+                ],
+                problema: "Detección creciente de microlitiasis renal asintomática sin intervención preventiva en adultos jóvenes y de mediana edad.",
+                causas: [
+                    "Ingesta hídrica deficiente asociada a altas temperaturas ambientales y deshidratación.",
+                    "Patrones dietéticos con sobrecarga de sodio, proteínas animales y oxalato.",
+                    "Sedentarismo marcado que disminuye la tasa de filtrado y el recambio metabólico.",
+                    "Falta de tamizaje ecográfico abdominal preventivo en trabajadores de alto riesgo."
+                ],
+                redaccion: "La microlitiasis renal asintomática constituye una problemática de salud pública en ascenso. Mediante el árbol de causas, se identifican el sedentarismo severo y la deshidratación crónica como los factores basales predominantes. La ausencia de un monitoreo sonográfico rutinario en atención primaria impide su detección temprana, permitiendo que la microcristalización evolucione a uropatía obstructiva compleja con secuelas sobre la función renal."
+            }
         },
         farmacologia: {
-            p1: "¿Influye",
-            p2: "el uso prolongado de opioides",
-            p3: "en el",
-            p4: "desarrollo de tolerancia farmacológica",
-            p5: "en pacientes",
-            p6: "con dolor crónico no oncológico",
-            p7: "en centros de salud de Santa Cruz",
-            p8: "en la gestión 2024",
-            verbo: "Demostrar"
-        },
-        educacion: {
-            p1: "¿En qué medida",
-            p2: "el Programa Experimental de comprensión lectora",
-            p3: "influye en",
-            p4: "el rendimiento académico",
-            p5: "de los estudiantes",
-            p6: "de la carrera de Ingeniería Comercial de la Universidad Privada Domingo Savio",
-            p7: "de Santa Cruz - Bolivia",
-            p8: "en el año 2019",
-            verbo: "Evaluar"
+            titulo: "Tolerancia farmacológica y daño por uso crónico de analgésicos",
+            problemaCentral: "Desarrollo de tolerancia farmacológica y daño orgánico por consumo indebido de opioides y AINEs",
+            ishikawa: {
+                cabeza: "Tolerancia / Toxicidad Farmacológica (VD)",
+                categorias: [
+                    { nombre: "Prescripción", causas: ["Falta de rotación sistemática de analgésicos", "Pautas de dosificación sin escalonamiento analgésico"] },
+                    { nombre: "Farmacocinética", causas: ["Desensibilización de receptores opioides mu", "Variabilidad en el metabolismo hepático del citocromo P450"] },
+                    { nombre: "Monitoreo", causas: ["Ausencia de ecografía de control renal/hepático", "Falta de seguimiento de biomarcadores séricos periódicos"] },
+                    { nombre: "Paciente", causas: ["Automedicación para el alivio del dolor crónico", "Aumento no autorizado de la dosis prescrita"] },
+                    { nombre: "Personal de Salud", causas: ["Falta de educación al paciente sobre tolerancia", "Subestimación del riesgo de dependencia física"] },
+                    { nombre: "Sistema Sanitario", causas: ["Venta no controlada en farmacias comunitarias", "Carencia de clínicas multidisciplinarias del dolor"] }
+                ]
+            },
+            arbol: {
+                efectos: [
+                    "Fracaso terapéutico en el control del dolor crónico y deterioro de la calidad de vida.",
+                    "Toxicidad orgánica severa: daño renal irreversible y hemorragias digestivas.",
+                    "Síndrome de abstinencia y dependencia farmacológica en el paciente.",
+                    "Aumento de hospitalizaciones por sobredosis o complicaciones nefrológicas."
+                ],
+                problema: "Incremento de la resistencia analgésica y tolerancia farmacológica en pacientes con dolor crónico no oncológico.",
+                causas: [
+                    "Administración continua y no supervisada de opioides a dosis elevadas.",
+                    "Uso concomitante de AINEs sin protección de la microcirculación renal.",
+                    "Falta de protocolos de desescalamiento farmacológico en atención ambulatoria.",
+                    "Ausencia de controles complementarios de imagen ecográfica renal periódicos."
+                ],
+                redaccion: "El desarrollo de tolerancia farmacológica frente a la analgesia sostenida plantea un dilema crítico en el manejo del dolor no oncológico. El análisis jerárquico revela que la falta de pautas de titulación y la prescripción monótona saturan los receptores diana, obligando a incrementar las dosis con la consiguiente nefrotoxicidad. El abordaje requiere articular el control clínico con estudios ecográficos que detecten precozmente alteraciones en la ecogenicidad renal antes de consolidar el daño tisular irreversible."
+            }
         }
     };
 
-    const diccionarioVerbos = {
-        "Explorar": { nivel: "Exploratorio", tipo: "exploratorio", desc: "Aproximación diagnóstica a fenómenos nuevos o poco estudiados en el área." },
-        "Indagar": { nivel: "Exploratorio", tipo: "exploratorio", desc: "Búsqueda inicial y abierta de evidencias empíricas sobre un problema." },
-        "Sondear": { nivel: "Exploratorio", tipo: "exploratorio", desc: "Constatación preliminar de síntomas o conductas clínicas." },
-        "Detectar": { nivel: "Exploratorio / Descriptivo", tipo: "exploratorio", desc: "Identificar precozmente la presencia de un signo o patología." },
-        "Reconocer": { nivel: "Exploratorio", tipo: "exploratorio", desc: "Distinguir patrones estructurales o manifestaciones clínicas." },
-        "Caracterizar": { nivel: "Descriptivo", tipo: "descriptivo", desc: "Detallar con precisión morfológica, ecográfica o clínica los rasgos de la variable." },
-        "Describir": { nivel: "Descriptivo", tipo: "descriptivo", desc: "Puntualizar el estado y frecuencia de un evento clínico sin asumir relación causal." },
-        "Determinar": { nivel: "Descriptivo / Analítico", tipo: "explicativo", desc: "Definir cuantitativamente índices, factores o prevalencias." },
-        "Identificar": { nivel: "Descriptivo", tipo: "descriptivo", desc: "Catalogar casos, factores predisponentes o signos diagnósticos específicos." },
-        "Cuantificar": { nivel: "Descriptivo", tipo: "descriptivo", desc: "Medir magnitudes exactas, volúmenes, frecuencias o proporciones numéricas." },
-        "Clasificar": { nivel: "Descriptivo", tipo: "descriptivo", desc: "Organizar hallazgos según categorías o taxonomías clínicas validadas." },
-        "Estimar": { nivel: "Descriptivo", tipo: "descriptivo", desc: "Calcular valores aproximados mediante modelos de predicción." },
-        "Relacionar": { nivel: "Correlacional", tipo: "explicativo", desc: "Medir si dos variables varían conjuntamente en la muestra de estudio." },
-        "Correlacionar": { nivel: "Correlacional", tipo: "explicativo", desc: "Calcular el coeficiente estadístico de dependencia entre variables." },
-        "Comparar": { nivel: "Comparativo", tipo: "explicativo", desc: "Cotejar resultados entre dos tratamientos, métodos diagnósticos o grupos de pacientes." },
-        "Contrastar": { nivel: "Comparativo", tipo: "explicativo", desc: "Confrontar un hallazgo preliminar contra una prueba estándar de confirmación (Gold Standard)." },
-        "Asociar": { nivel: "Correlacional", tipo: "explicativo", desc: "Comprobar si la presencia de un factor coexiste con una alteración." },
-        "Demostrar": { nivel: "Explicativo / Causal", tipo: "explicativo", desc: "Probar con rigor experimental o analítico que una causa genera determinado efecto." },
-        "Comprobar": { nivel: "Explicativo", tipo: "explicativo", desc: "Someter a prueba una conjetura o hipótesis causal mediante contrastación." },
-        "Explicar": { nivel: "Explicativo", tipo: "explicativo", desc: "Desentrañar el mecanismo fisiopatológico o causal que origina un fenómeno." },
-        "Verificar": { nivel: "Explicativo", tipo: "explicativo", desc: "Corroborar la consistencia de un diagnóstico o hipótesis previa." },
-        "Evaluar": { nivel: "Explicativo / Evaluativo", tipo: "explicativo", desc: "Medir el impacto o efectividad de un programa, técnica o fármaco aplicado." },
-        "Proponer": { nivel: "Propositivo (Capítulo 3)", tipo: "propositivo", desc: "Plantear un modelo, protocolo, guía o sistema como solución al problema estudiado." },
-        "Diseñar": { nivel: "Propositivo", tipo: "propositivo", desc: "Estructurar formalmente una propuesta técnica o educativa validada." },
-        "Estandarizar": { nivel: "Propositivo", tipo: "propositivo", desc: "Homogeneizar procedimientos clínicos o de medición para reducir errores." }
-    };
+    let casoActual = "ecografia";
 
-    function cargarCaso(tipo) {
-        ['ecografia', 'salud', 'farmacologia', 'educacion'].forEach(id => {
+    function cambiarCaso(caso) {
+        casoActual = caso;
+        
+        ['ecografia', 'salud', 'farmacologia'].forEach(id => {
             const el = document.getElementById('lbl-' + id);
             if (el) el.classList.remove('active');
         });
-        document.getElementById('lbl-' + tipo).classList.add('active');
+        document.getElementById('lbl-' + caso).classList.add('active');
 
-        const data = casos[tipo];
-        document.getElementById('c1_pregunta').value = data.p1;
-        document.getElementById('c2_vi').value = data.p2;
-        document.getElementById('c3_enlace').value = data.p3;
-        document.getElementById('c4_vd').value = data.p4;
-        document.getElementById('c5_poblacion').value = data.p5;
-        document.getElementById('c6_institucion').value = data.p6;
-        document.getElementById('c7_geografia').value = data.p7;
-        document.getElementById('c8_tiempo').value = data.p8;
-        document.getElementById('verbo_select').value = data.verbo;
-
-        actualizarVerboInfo();
-        sincronizar();
+        renderIshikawa();
+        renderArbol();
     }
 
-    function actualizarVerboInfo() {
-        const verbo = document.getElementById('verbo_select').value;
-        const info = diccionarioVerbos[verbo];
-        const box = document.getElementById('box_verb_detail');
-        if (!info) return;
+    function seleccionarVista(vista) {
+        document.getElementById('vista-ishikawa').style.display = (vista === 'ishikawa') ? 'block' : 'none';
+        document.getElementById('vista-arbol').style.display = (vista === 'arbol') ? 'block' : 'none';
 
-        let badgeClass = 'badge-posible';
-        let badgeText = 'Objetivos y posible hipótesis';
-
-        // Corrección metodológica: el nivel exploratorio es básico y se trabaja sólo con objetivos
-        if (info.tipo === 'exploratorio') {
-            badgeClass = 'badge-exploratorio';
-            badgeText = 'Objetivo (Estudio exploratorio básico)';
-        } else if (info.tipo === 'explicativo') {
-            badgeClass = 'badge-req';
-            badgeText = 'Obligatorio formular Hipótesis de contraste';
-        }
-
-        box.innerHTML = `
-            <div><strong>Nivel Taxonómico:</strong> ${info.nivel}</div>
-            <div><strong>Significado metodológico:</strong> ${info.desc}</div>
-            <div><span class="badge-hipotesis ${badgeClass}">${badgeText}</span></div>
-        `;
+        document.getElementById('btn-tab-ishikawa').classList.toggle('active', vista === 'ishikawa');
+        document.getElementById('btn-tab-arbol').classList.toggle('active', vista === 'arbol');
     }
 
-    function sincronizar() {
-        const c1 = document.getElementById('c1_pregunta').value.trim();
-        const c2 = document.getElementById('c2_vi').value.trim();
-        const c3 = document.getElementById('c3_enlace').value.trim();
-        const c4 = document.getElementById('c4_vd').value.trim();
-        const c5 = document.getElementById('c5_poblacion').value.trim();
-        const c6 = document.getElementById('c6_institucion').value.trim();
-        const c7 = document.getElementById('c7_geografia').value.trim();
-        const c8 = document.getElementById('c8_tiempo').value.trim();
-        const verbo = document.getElementById('verbo_select').value.trim();
+    function renderIshikawa() {
+        const data = baseCasos[casoActual].ishikawa;
+        const svg = document.getElementById('svg-ishikawa');
+        
+        // Coordenadas fijas para 6 espinas (3 superiores, 3 inferiores)
+        const spineCoords = [
+            { xTop: 200, xBase: 320, yTop: 60, yBase: 250, labelY: 45, causes: data.categorias[0] },
+            { xTop: 450, xBase: 570, yTop: 60, yBase: 250, labelY: 45, causes: data.categorias[1] },
+            { xTop: 700, xBase: 820, yTop: 60, yBase: 250, labelY: 45, causes: data.categorias[2] },
+            { xTop: 200, xBase: 320, yTop: 440, yBase: 250, labelY: 470, causes: data.categorias[3] },
+            { xTop: 450, xBase: 570, yTop: 440, yBase: 250, labelY: 470, causes: data.categorias[4] },
+            { xTop: 700, xBase: 820, yTop: 440, yBase: 250, labelY: 470, causes: data.categorias[5] }
+        ];
 
-        // 1. Pizarra de anatomía con formato por colores
-        document.getElementById('pizarra_anatomia').innerHTML = `
-            • ${c1}<span class="t-num">(1)</span> 
-            <span class="t-vi">${c2}</span><span class="t-num">(2)</span> 
-            ${c3}<span class="t-num">(3)</span> 
-            <span class="t-vd">${c4}</span><span class="t-num">(4)</span> 
-            ${c5}<span class="t-num">(5)</span> 
-            <span class="t-amb">${c6}</span><span class="t-num">(6)</span> 
-            <span class="t-amb">${c7}</span><span class="t-num">(7)</span> 
-            <span class="t-amb">${c8}</span><span class="t-num">(8)</span>?
+        let html = `
+            <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#0f2d59" />
+                </marker>
+            </defs>
+
+            <!-- Espina Dorsal Central -->
+            <line x1="80" y1="250" x2="930" y2="250" stroke="#0f2d59" stroke-width="5" marker-end="url(#arrow)" />
+            
+            <!-- Cola del Pez -->
+            <polygon points="50,180 90,250 50,320 30,250" fill="#cbd5e1" stroke="#0f2d59" stroke-width="2" />
+
+            <!-- Cabeza del Pez (Efecto / Problema) -->
+            <polygon points="930,160 1130,250 930,340 950,250" fill="#0284c7" stroke="#0369a1" stroke-width="2" />
+            <text x="1025" y="240" fill="#ffffff" font-size="13" font-weight="bold" text-anchor="middle">PROBLEMA (VD):</text>
+            <text x="1025" y="262" fill="#ffffff" font-size="11.5" font-weight="600" text-anchor="middle" width="160">
+                ${cortarTextoSvg(data.cabeza, 22)[0]}
+            </text>
+            <text x="1025" y="278" fill="#ffffff" font-size="11.5" font-weight="600" text-anchor="middle">
+                ${cortarTextoSvg(data.cabeza, 22)[1] || ''}
+            </text>
         `;
 
-        // 2. Formulación del Problema
-        const problema = `${c1} ${c2} ${c3} ${c4} ${c5} ${c6} ${c7} ${c8}?`;
-        document.getElementById('out_problema').innerText = problema;
+        // Generar Espinas y Causas
+        spineCoords.forEach((s) => {
+            html += `
+                <!-- Espina Mayor -->
+                <line x1="${s.xTop}" y1="${s.yTop}" x2="${s.xBase}" y2="${s.yBase}" stroke="#0284c7" stroke-width="3" />
+                
+                <!-- Caja de Categoría -->
+                <rect x="${s.xTop - 80}" y="${s.labelY - 15}" width="160" height="26" rx="5" fill="#0f2d59" />
+                <text x="${s.xTop}" y="${s.labelY + 2}" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle">
+                    ${s.causes.nombre}
+                </text>
+            `;
 
-        // 3. Objetivo General
-        const objetivo = `${verbo} ${c2} ${c3} ${c4} ${c5} ${c6} ${c7} ${c8}.`;
-        document.getElementById('out_objetivo').innerText = objetivo;
+            // Sub-causas (Espinas menores horizontales)
+            const isTop = s.yTop < 250;
+            const subY1 = isTop ? s.yTop + 60 : s.yTop - 60;
+            const subY2 = isTop ? s.yTop + 120 : s.yTop - 120;
+            const subX1 = s.xTop + (s.xBase - s.xTop) * (isTop ? 0.35 : 0.35);
+            const subX2 = s.xTop + (s.xBase - s.xTop) * (isTop ? 0.70 : 0.70);
 
-        // 4. Hipótesis (en nivel exploratorio básico se trabaja sólo con objetivos)
-        const verboData = diccionarioVerbos[verbo];
-        if (verboData && verboData.tipo === 'exploratorio') {
-            document.getElementById('out_hipotesis').innerHTML = `<em>En las investigaciones de nivel exploratorio se trabaja sólo con objetivos; por ser un nivel básico no requiere formulación de hipótesis.</em>`;
-        } else {
-            const hipotesis = `La presencia o variación en ${c2} condiciona e influye directamente en ${c4} ${c5} ${c6} ${c7} ${c8}.`;
-            document.getElementById('out_hipotesis').innerText = hipotesis;
-        }
+            html += `
+                <!-- Causa 1 -->
+                <line x1="${subX1 - 90}" y1="${subY1}" x2="${subX1}" y2="${subY1}" stroke="#64748b" stroke-width="1.8" />
+                <text x="${subX1 - 95}" y="${subY1 - 4}" fill="#1e293b" font-size="10" font-weight="600" text-anchor="end">
+                    ${s.causes.causas[0]}
+                </text>
 
-        // 5. Título Científico
-        const titulo = `${c4.toUpperCase()} Y SU RELACIÓN CON ${c2.toUpperCase()} ${c5.toUpperCase()} (${c6.toUpperCase()} - ${c7.toUpperCase()}, ${c8.toUpperCase()})`;
-        document.getElementById('out_titulo').innerText = titulo;
+                <!-- Causa 2 -->
+                <line x1="${subX2 - 90}" y1="${subY2}" x2="${subX2}" y2="${subY2}" stroke="#64748b" stroke-width="1.8" />
+                <text x="${subX2 - 95}" y="${subY2 - 4}" fill="#1e293b" font-size="10" font-weight="600" text-anchor="end">
+                    ${s.causes.causas[1]}
+                </text>
+            `;
+        });
 
-        // 6. Detección de variables
-        document.getElementById('dt_vi').innerText = c2;
-        document.getElementById('dt_vd').innerText = c4;
-        document.getElementById('dt_obj').innerText = `El estudio de ${c4}.`;
-        document.getElementById('dt_campo').innerText = `${c2} aplicado en el contexto de ${c5} (${c6}, ${c7}).`;
+        svg.innerHTML = html;
+        document.getElementById('ishikawa-explicacion').innerText = 
+            `En el presente diagrama de Ishikawa aplicado al ámbito de ${casoActual.toUpperCase()}, la cabeza del pez representa la Variable Dependiente (${data.cabeza}), mientras que las 6 espinas principales clasifican las distintas fuentes etiológicas y técnicas que la generan. Cada sub-espina constituye una Variable Independiente potencial que el investigador puede aislar y someter a comprobación estadística en su tesis de posgrado.`;
     }
 
-    function copiarAlPortapapeles() {
-        const texto = `=== MATRIZ METODOLÓGICA: ANATOMÍA DE UN PROBLEMA ===\n` +
-            `(PhD. Jaime Zambrana Chacón)\n\n` +
-            `1. FORMULACIÓN DEL PROBLEMA:\n${document.getElementById('out_problema').innerText}\n\n` +
-            `2. OBJETIVO GENERAL:\n${document.getElementById('out_objetivo').innerText}\n\n` +
-            `3. HIPÓTESIS:\n${document.getElementById('out_hipotesis').innerText}\n\n` +
-            `4. TÍTULO DE LA INVESTIGACIÓN:\n${document.getElementById('out_titulo').innerText}\n\n` +
-            `5. DESGLOSE:\n` +
-            `- Variable Independiente (VI): ${document.getElementById('dt_vi').innerText}\n` +
-            `- Variable Dependiente (VD): ${document.getElementById('dt_vd').innerText}\n` +
-            `- Objeto de Estudio: ${document.getElementById('dt_obj').innerText}\n` +
-            `- Campo de Acción: ${document.getElementById('dt_campo').innerText}`;
+    function renderArbol() {
+        const data = baseCasos[casoActual].arbol;
 
-        navigator.clipboard.writeText(texto).then(() => {
-            alert('¡Matriz completa copiada exitosamente! Lista para pegar en Word.');
+        // Efectos (Ramas)
+        const contEfectos = document.getElementById('arbol-efectos');
+        contEfectos.innerHTML = data.efectos.map(e => `<div class="tree-node node-efecto">⚠️ ${e}</div>`).join('');
+
+        // Problema Central (Tronco)
+        document.getElementById('arbol-problema-central').innerHTML = `🎯 <strong>PROBLEMA CENTRAL (VD):</strong><br>${data.problema}`;
+
+        // Causas (Raíces)
+        const contCausas = document.getElementById('arbol-causas');
+        contCausas.innerHTML = data.causas.map(c => `<div class="tree-node node-causa">📌 <strong>Causa raíz:</strong> ${c}</div>`).join('');
+
+        // Redacción del Planteamiento
+        document.getElementById('arbol-redaccion').innerText = data.redaccion;
+    }
+
+    function cortarTextoSvg(str, max) {
+        if (str.length <= max) return [str, ''];
+        const words = str.split(' ');
+        let l1 = '', l2 = '';
+        for (let w of words) {
+            if ((l1 + w).length <= max) {
+                l1 += (l1 ? ' ' : '') + w;
+            } else {
+                l2 += (l2 ? ' ' : '') + w;
+            }
+        }
+        return [l1, l2];
+    }
+
+    function copiarPlanteamiento() {
+        const txt = document.getElementById('arbol-redaccion').innerText;
+        navigator.clipboard.writeText(txt).then(() => {
+            alert('¡Párrafo del planteamiento copiado al portapapeles!');
         });
     }
 
+    // Inicializar al cargar
     window.onload = function() {
-        cargarCaso('ecografia');
+        cambiarCaso('ecografia');
     };
 </script>
 
